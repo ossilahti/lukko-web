@@ -1,6 +1,7 @@
 /** Cloudflare Worker entry point for the vinext-starter template. */
 import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
+import { createCheckout, createPortal, getEntitlement, verifyWebhook } from "./stripe";
 
 interface Env {
   ASSETS: Fetcher;
@@ -11,6 +12,11 @@ interface Env {
       };
     };
   };
+  STRIPE_SECRET_KEY?: string;
+  STRIPE_PRICE_ID?: string;
+  STRIPE_WEBHOOK_SECRET?: string;
+  LUKKO_SESSION_SECRET?: string;
+  APP_URL?: string;
 }
 
 interface ExecutionContext {
@@ -41,6 +47,11 @@ function withSecurityHeaders(response: Response) {
 const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
+
+    if (url.pathname === "/api/checkout" && request.method === "POST") return withSecurityHeaders(await createCheckout(request, env));
+    if (url.pathname === "/api/entitlement" && request.method === "GET") return withSecurityHeaders(await getEntitlement(request, env));
+    if (url.pathname === "/api/portal" && request.method === "POST") return withSecurityHeaders(await createPortal(request, env));
+    if (url.pathname === "/api/stripe/webhook" && request.method === "POST") return withSecurityHeaders(await verifyWebhook(request, env));
 
     if (url.pathname === "/_vinext/image") {
       const allowedWidths = [...DEFAULT_DEVICE_SIZES, ...DEFAULT_IMAGE_SIZES];
