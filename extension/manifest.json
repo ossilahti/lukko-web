@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "Lukko — Focus Blocker",
+  "version": "0.1.0",
+  "description": "Estää valitut verkkotunnukset Lukko-keskittymisistunnon aikana.",
+  "minimum_chrome_version": "120",
+  "permissions": [
+    "storage",
+    "alarms",
+    "declarativeNetRequestWithHostAccess"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "Lukko Focus Blocker"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://lukko-web.laosmo.chatgpt.site/*",
+        "http://localhost:3000/*",
+        "http://127.0.0.1:3000/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ]
+}
