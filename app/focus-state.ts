@@ -1,4 +1,5 @@
 export type PresetId = "pomodoro" | "reading" | "deepWork" | "custom";
+export type ThemeMode = "system" | "light" | "dark";
 
 export type FocusPreset = {
   id: PresetId;
@@ -35,10 +36,15 @@ export const DEFAULT_PROTECTED_APPS: MockProtectedApp[] = [
   { id: "youtube", name: "YouTube", description: "Videot ja suositukset" },
 ];
 
+export const DEFAULT_BLOCKED_DOMAINS = ["instagram.com", "youtube.com", "tiktok.com"];
+
 export type PersistedState = {
   presetId: PresetId;
   customMinutes: number;
   selectedAppIds: MockProtectedApp["id"][];
+  blockedDomains: string[];
+  blockingEnabled: boolean;
+  theme: ThemeMode;
   sessions: FocusSession[];
   isRunning: boolean;
   endAt: number | null;
@@ -51,6 +57,9 @@ export const DEFAULT_STATE: PersistedState = {
   presetId: "pomodoro",
   customMinutes: 30,
   selectedAppIds: ["mail", "instagram"],
+  blockedDomains: DEFAULT_BLOCKED_DOMAINS,
+  blockingEnabled: true,
+  theme: "system",
   sessions: [],
   isRunning: false,
   endAt: null,
@@ -58,6 +67,25 @@ export const DEFAULT_STATE: PersistedState = {
   activeDurationSeconds: null,
   startedAt: null,
 };
+
+const DOMAIN_PATTERN = /^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/;
+
+export function normalizeDomain(value: string) {
+  const candidate = value
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//, "")
+    .split(/[/?#\s]/, 1)[0]
+    .replace(/^www\./, "")
+    .replace(/\.$/, "");
+
+  return DOMAIN_PATTERN.test(candidate) ? candidate : null;
+}
+
+export function normalizeDomains(values: unknown) {
+  if (!Array.isArray(values)) return [...DEFAULT_BLOCKED_DOMAINS];
+  return [...new Set(values.filter((value): value is string => typeof value === "string").map(normalizeDomain).filter(Boolean))] as string[];
+}
 
 export function clampCustomMinutes(value: number) {
   if (!Number.isFinite(value)) return MIN_CUSTOM_MINUTES;

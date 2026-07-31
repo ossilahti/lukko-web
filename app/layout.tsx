@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Lukko — rauha ruudun äärellä",
-  description: "Lukon paikallinen fokusdemo auttaa varaamaan tilaa tärkeälle.",
+  title: "Lukko — yksi asia kerrallaan",
+  description: "Lukko tekee keskittymisestä helpompaa opiskelussa, työssä ja arjessa.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",

@@ -11,6 +11,7 @@ const {
   createRunningState,
   getPresetMinutes,
   getSecondsRemaining,
+  normalizeDomain,
   pauseFocusSession,
   resetFocusSession,
   resumeFocusSession,
@@ -54,4 +55,11 @@ test("completion creates a local history entry and clears the active timer", () 
   assert.equal(completed.sessions[0].startedAt, 10_000);
   assert.equal(completed.sessions[0].completedAt, 1_510_000);
   assert.equal(completed.sessions[0].durationMinutes, 25);
+});
+
+test("blocker domain input is normalized and rejects unsafe values", () => {
+  assert.equal(normalizeDomain("https://www.TikTok.com/feed"), "tiktok.com");
+  assert.equal(normalizeDomain("reddit.com"), "reddit.com");
+  assert.equal(normalizeDomain("javascript:alert(1)"), null);
+  assert.equal(normalizeDomain("not a domain"), null);
 });

@@ -28,9 +28,10 @@ test("server-renders the Lukko dashboard", async () => {
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
-  assert.match(html, /<title>Lukko — rauha ruudun äärellä<\/title>/i);
-  assert.match(html, /Varaa tilaa tärkeälle/);
+  assert.match(html, /<title>Lukko — yksi asia kerrallaan<\/title>/i);
+  assert.match(html, /Yksi asia kerrallaan/);
+  assert.match(html, /Sivustot pois tieltä/);
   assert.match(html, /Suojatut sovellukset/);
-  assert.match(html, /Tämä on verkkodemo/);
+  assert.match(html, /Stripe-hosted Checkout/);
   assert.doesNotMatch(html, /codex-preview|Your site is taking shape|Building your site|react-loading-skeleton/i);
 });
